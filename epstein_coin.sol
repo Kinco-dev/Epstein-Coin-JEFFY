@@ -2,10 +2,10 @@
 /**
  * SPDX-License-Identifier: MIT
  *
- *  Total Supply: 10,000,000,000
+ *  Total Supply: 2,000,000,000
  *  Decimals: 18
  *  Token Name: Epstein Coin
- *  Symbol: JEFFY
+ *  Symbol: JEFRY
  *  Taxes : 0%
  * 
  */
@@ -354,7 +354,7 @@ contract EpsteinCoin is ERC20, Ownable {
 
     event CoolDownUpdated(bool state,uint32 timeInSeconds);
 
-    constructor() ERC20("Epstein Coin", "JEFFY") {
+    constructor() ERC20("Epstein Coin", "JEFRY") {
 
         _mint(_msgSender(), 10_000_000_000 * 10**18);
 
@@ -379,21 +379,21 @@ contract EpsteinCoin is ERC20, Ownable {
     }
 
     function excludeFromMaxWalletLimit(address account, bool excluded) public onlyOwner {
-        require(_isExcludedFromMaxWalletLimit[account] != excluded, "JEFFY: Account has already the value of 'excluded'");
+        require(_isExcludedFromMaxWalletLimit[account] != excluded, "JEFRY: Account has already the value of 'excluded'");
         _isExcludedFromMaxWalletLimit[account] = excluded;
 
         emit ExcludeFromMaxWalletLimit(account, excluded);
     }
 
     function excludeFromMaxSellLimit(address account, bool excluded) public onlyOwner {
-        require(_isExcludedFromMaxSellLimit[account] != excluded, "JEFFY: Account has already the value of 'excluded'");
+        require(_isExcludedFromMaxSellLimit[account] != excluded, "JEFRY: Account has already the value of 'excluded'");
         _isExcludedFromMaxSellLimit[account] = excluded;
 
         emit ExcludeFromMaxSellLimit(account, excluded);
     }
 
     function excludeFromCooldown(address account, bool excluded) public onlyOwner {
-        require(_isExcludedFromCooldown[account] != excluded, "JEFFY: Account has already the value of 'excluded'");
+        require(_isExcludedFromCooldown[account] != excluded, "JEFRY: Account has already the value of 'excluded'");
         _isExcludedFromCooldown[account] = excluded;
 
         emit ExcludeFromCooldown(account, excluded);
@@ -401,13 +401,13 @@ contract EpsteinCoin is ERC20, Ownable {
 
 
     function setAutomatedMarketMakerPair(address pair, bool value) public onlyOwner {
-        require(pair != dexPair, "JEFFY: The main pair cannot be removed from automatedMarketMakerPairs");
+        require(pair != dexPair, "JEFRY: The main pair cannot be removed from automatedMarketMakerPairs");
 
         _setAutomatedMarketMakerPair(pair, value);
     }
 
     function _setAutomatedMarketMakerPair(address pair, bool value) private {
-        require(automatedMarketMakerPairs[pair] != value, "JEFFY: Automated market maker pair is already set to that value");
+        require(automatedMarketMakerPairs[pair] != value, "JEFRY: Automated market maker pair is already set to that value");
         automatedMarketMakerPairs[pair] = value;
 
         _isExcludedFromMaxWalletLimit[pair] = value;
@@ -417,7 +417,7 @@ contract EpsteinCoin is ERC20, Ownable {
     }
 
     function updateV2Router(address newAddress) public onlyOwner {
-        require(newAddress != address(dexRouter), "JEFFY: The router has already that address");
+        require(newAddress != address(dexRouter), "JEFRY: The router has already that address");
         emit Router02Updated(newAddress, address(dexRouter));
         dexRouter = IRouter02(newAddress);
         dexPair = IFactory02(dexRouter.factory())
@@ -427,20 +427,20 @@ contract EpsteinCoin is ERC20, Ownable {
     }
 
     function updateCooldown(bool state, uint32 timeInSeconds) external onlyOwner{
-        require(timeInSeconds <= 600, "JEFFY: The cooldown must be lower or equals to 600 seconds");
+        require(timeInSeconds <= 600, "JEFRY: The cooldown must be lower or equals to 600 seconds");
          coolDownTime = timeInSeconds * 1 seconds;
          coolDownEnabled = state;
          emit CoolDownUpdated(state,timeInSeconds);
     }
 
     function setMaxWalletLimit(uint256 amount) external onlyOwner {
-        require(amount >= totalSupply()/100/10**18, "JEFFY: Amount must be greater than 1% of the total supply"); 
+        require(amount >= totalSupply()/100/10**18, "JEFRY: Amount must be greater than 1% of the total supply"); 
         maxWalletLimit = amount *10**18;
         emit MaxWalletLimitUpdated(maxWalletLimit);
     }
 
         function setMaxSellLimit(uint256 amount) external onlyOwner {
-        require(amount >= totalSupply()/1000/10**18, "JEFFY: Amount must be greater than 0.1% of the total supply");
+        require(amount >= totalSupply()/1000/10**18, "JEFRY: Amount must be greater than 0.1% of the total supply");
         maxSellLimit = amount *10**18;
         emit MaxSellLimitUpdated(maxSellLimit);
     }
@@ -456,31 +456,31 @@ contract EpsteinCoin is ERC20, Ownable {
     }
 
     function _transfer(address from, address to, uint256 amount) internal override {
-        require(from != address(0), "JEFFY: Transfer from the zero address");
-        require(to != address(0), "JEFFY: Transfer to the zero address");
-        require(amount >= 0, "JEFFY: Transfer amount must be greater or equals to zero");
+        require(from != address(0), "JEFRY: Transfer from the zero address");
+        require(to != address(0), "JEFRY: Transfer to the zero address");
+        require(amount >= 0, "JEFRY: Transfer amount must be greater or equals to zero");
 
         bool isBuyTransfer = automatedMarketMakerPairs[from];
         bool isSellTransfer = automatedMarketMakerPairs[to];
         // Check max wallet limit for "normal" transfers
         if(!isSellTransfer && !isBuyTransfer && !_isExcludedFromMaxWalletLimit[to] && from != owner()) {
-            require(balanceOf(to) + amount <= maxWalletLimit, "JEFFY: Amount exceeds the maxWalletLimit.");
+            require(balanceOf(to) + amount <= maxWalletLimit, "JEFRY: Amount exceeds the maxWalletLimit.");
         }
         // Check max wallet limit 
         // "To" address must not be excluded and the transaction must be a buy or a normal transfer + "from" must not be the owner
         if(!_isExcludedFromMaxWalletLimit[to] && (isBuyTransfer || (!isSellTransfer && !isBuyTransfer && from != owner()))){
-            require(balanceOf(to) + amount <= maxWalletLimit, "JEFFY: Amount exceeds the maxWalletLimit.");
+            require(balanceOf(to) + amount <= maxWalletLimit, "JEFRY: Amount exceeds the maxWalletLimit.");
         }
 
         // Check max sell limit
         if(isSellTransfer && from != address(dexRouter) && !_isExcludedFromMaxSellLimit[from]){
-            require(amount <= maxSellLimit, "JEFFY: Amount exceeds the maxSellLimit");
+            require(amount <= maxSellLimit, "JEFRY: Amount exceeds the maxSellLimit");
         }
 
         // Check cooldown
         if(coolDownEnabled && !isBuyTransfer && !_isExcludedFromCooldown[from]){
             uint256 timePassed = block.timestamp - _lastTimeTx[from];
-            require(timePassed >= coolDownTime, "JEFFY: The cooldown is not finished, please retry the transfer later");
+            require(timePassed >= coolDownTime, "JEFRY: The cooldown is not finished, please retry the transfer later");
         }
 
         // Add a cooldown if it's a buy transfer
@@ -504,12 +504,12 @@ contract EpsteinCoin is ERC20, Ownable {
     }
 
     function withdrawStuckETH(address payable to) external onlyOwner {
-        require(address(this).balance > 0, "JEFFY: There are no ETH in the contract");
+        require(address(this).balance > 0, "JEFRY: There are no ETH in the contract");
         to.sendValue(address(this).balance);
     } 
 
     function withdrawStuckERC20Tokens(address token, address to) external onlyOwner {
-        require(IERC20(token).balanceOf(address(this)) > 0, "JEFFY: There are no tokens in the contract");
+        require(IERC20(token).balanceOf(address(this)) > 0, "JEFRY: There are no tokens in the contract");
         require(IERC20(token).transfer(to, IERC20(token).balanceOf(address(this))));
     }
 
