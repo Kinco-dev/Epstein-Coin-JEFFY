@@ -2,7 +2,7 @@
 /**
  * SPDX-License-Identifier: MIT
  *
- *  Total Supply: 2,000,000,000
+ *  Total Supply: 10,000,000,000
  *  Decimals: 18
  *  Token Name: Epstein Coin
  *  Symbol: JEFRY
